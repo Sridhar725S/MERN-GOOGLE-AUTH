@@ -8,14 +8,14 @@ function Profile() {
 
     useEffect(() => {
         axios.get('https://mern-google-login.onrender.com/auth/current_user', {
-    withCredentials: true, // Allows sending cookies with the request
-})
-.then(response => {
-    console.log("User data:", response.data);
-})
-.catch(error => {
-    console.error("Error fetching user data:", error);
-});
+            withCredentials: true, // Allows sending cookies with the request
+    })
+    .then(response => {
+        console.log("User data:", response.data);
+    })
+    .catch(error => {
+        console.error("Error fetching user data:", error);
+    });
 
     }, []);
 
