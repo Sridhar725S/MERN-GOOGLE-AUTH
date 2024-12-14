@@ -5,6 +5,7 @@ const passport = require('passport');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 require('./config/passportConfig');
 
@@ -24,6 +25,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI, // MongoDB URI for storing sessions
+        collectionName: 'sessions', // Name of the collection where sessions will be stored
+    }),
     cookie: { maxAge: 24 * 60 * 60 * 1000 , // 1-day cookie expiration
         secure:process.env.NODE_ENV === 'production' // Only use secure cookies in production
     }
