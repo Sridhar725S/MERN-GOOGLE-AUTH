@@ -7,12 +7,16 @@ function Profile() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get("/auth/current_user", { withCredentials: true })
-            .then(res => {
-                console.log("User data:", res.data); // Check user data for correct profilePicture URL
-                setUser(res.data);
-            })
-            .catch(err => console.error("Error fetching user data:", err));
+        axios.get('https://mern-google-login.onrender.com/auth/current_user', {
+    withCredentials: true, // Allows sending cookies with the request
+})
+.then(response => {
+    console.log("User data:", response.data);
+})
+.catch(error => {
+    console.error("Error fetching user data:", error);
+});
+
     }, []);
 
     return (
