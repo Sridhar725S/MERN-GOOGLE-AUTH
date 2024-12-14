@@ -36,6 +36,12 @@ app.use(passport.session());
 // Routes
 app.use('/auth', authRoutes);
 
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+});
+
 // Starting the Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
