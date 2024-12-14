@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 require('./config/passportConfig');
 
