@@ -7,6 +7,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', passport.authenticate('google', {
     failureRedirect: 'https://mern-google-login.onrender.com',
 }), (req, res) => {
+    console.log("User session after login:", req.user);
     res.redirect('https://mern-google-login.onrender.com/profile');
 });
 
