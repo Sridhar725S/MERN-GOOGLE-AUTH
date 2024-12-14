@@ -12,8 +12,13 @@ router.get('/google/callback', passport.authenticate('google', {
 });
 
 router.get('/current_user', (req, res) => {
-    console.log("Current user:", req.user);
-    res.send(req.user);
+    console.log("Current user session:", req.session);
+    console.log("Current user object:", req.user);
+    if (req.user) {
+        res.send(req.user);
+    } else {
+        res.status(401).send({ error: "User not authenticated" });
+    }
 });
 
 router.get('/logout', (req, res) => {
