@@ -29,10 +29,11 @@ app.use(session({
         mongoUrl: process.env.MONGO_URI, // MongoDB URI for storing sessions
         collectionName: 'sessions', // Name of the collection where sessions will be stored
     }),
-    cookie: { maxAge: 24 * 60 * 60 * 1000 , // 1-day cookie expiration
+    cookie: { 
             secure: true, // Use secure cookies in production
             httpOnly: true, // Prevent client-side JS from accessing cookies
             sameSite: 'none', // Ensure compatibility with cross-site requests
+            maxAge: 24 * 60 * 60 * 1000 , // 1-day cookie expiration
             }
     } 
 ));
