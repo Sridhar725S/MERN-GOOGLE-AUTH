@@ -30,8 +30,10 @@ app.use(session({
         collectionName: 'sessions', // Name of the collection where sessions will be stored
     }),
     cookie: { maxAge: 24 * 60 * 60 * 1000 , // 1-day cookie expiration
-        secure:process.env.NODE_ENV === 'production' // Only use secure cookies in production
-    }
+            secure:process.env.NODE_ENV === 'production', // Only use secure cookies in production
+            httpOnly: true,
+            sameSite: 'strict', // CSRF protection
+            }
     } 
 ));
 
