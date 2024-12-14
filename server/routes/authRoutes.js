@@ -8,6 +8,7 @@ router.get('/google/callback', passport.authenticate('google', {
     failureRedirect: 'https://mern-google-login.onrender.com',
 }), (req, res) => {
     console.log("User session after login:", req.user);
+    console.log("User session after login:", req.session); // Log session here
     res.redirect('https://mern-google-login.onrender.com/profile');
 });
 
