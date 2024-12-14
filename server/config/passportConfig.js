@@ -4,13 +4,15 @@ const User = require('../models/User');
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => {
-        console.log("Deserialized user:", user); // Log the user here
-        done(null, user);
-    }).catch(err => {
-        console.error("Error deserializing user:", err);
-        done(err, null);
-    });
+    User.findById(id)
+        .then(user => {
+            console.log("Deserialized user:", user); // Debugging
+            done(null, user); // Attach user to `req.user`
+        })
+        .catch(err => {
+            console.error("Error deserializing user:", err);
+            done(err, null);
+        });
 });
 
 passport.use(new GoogleStrategy({
