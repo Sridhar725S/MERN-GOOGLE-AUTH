@@ -7,7 +7,7 @@ function Profile() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get("https://mern-google-login.onrender.com/auth/current_user", { withCredentials: true })
+        axios.get("/auth/current_user", { withCredentials: true })
             .then(res => {
                 console.log("User data:", res.data); // Check user data for correct profilePicture URL
                 setUser(res.data);
