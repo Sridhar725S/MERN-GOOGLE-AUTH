@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const RedisStore = require('connect-redis')(session); // Correct usage for newer versions of connect-redis
-const { createClient } = require('redis'); // Import createClient for Redis
+const RedisStore = require('connect-redis').default; // Use `.default` to handle ESM compatibility
+const Redis = require('ioredis'); // Redis client library
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
@@ -32,6 +32,7 @@ app.use(cors({
     credentials: true,
 }));
 
+const redisClient = new Redis(process.env.REDIS_URL); // Create Redis client
 // Session Middleware
 app.use(session({
     store: new RedisStore({ client: redisClient }), // Use the Redis client for the session store
