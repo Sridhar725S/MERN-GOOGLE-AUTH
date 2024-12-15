@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const RedisStore = require('connect-redis'); // Correct import for v8.0.1
+const connectRedis = require('connect-redis'); // Import connect-redis
 const Redis = require('ioredis'); // Redis client library
 const cors = require('cors');
 const path = require('path');
@@ -32,14 +32,12 @@ const redisClient = new Redis(process.env.REDIS_URL);
 redisClient.on('connect', () => console.log('Connected to Redis'));
 redisClient.on('error', (err) => console.error('Redis connection error:', err));
 
-// Initialize RedisStore
-const redisStore = new RedisStore({
-    client: redisClient
-});
+// Initialize RedisStore by calling connectRedis
+const RedisStore = connectRedis(session);  // Pass session middleware to connect-redis
 
 // Session Middleware
 app.use(session({
-    store: redisStore, // Use the RedisStore instance
+    store: new RedisStore({ client: redisClient }), // Use RedisStore instance here
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
