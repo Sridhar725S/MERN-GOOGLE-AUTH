@@ -22,18 +22,23 @@ app.use(cors({
     credentials: true // Allow cookies to be sent
 }));
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { 
-        secure: true, 
-        httpOnly: true, 
-        sameSite: 'none', 
-        maxAge: 24 * 60 * 60 * 1000 // 1-day expiration
-    }
-}));
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_URI, // MongoDB connection
+            collectionName: 'sessions',
+        }),
+        cookie: {
+            secure: true, // For HTTPS
+            httpOnly: true,
+            sameSite: 'none', // Required for cross-origin cookies
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        },
+    })
+);
 
 
 
