@@ -7,10 +7,14 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', passport.authenticate('google', {
     failureRedirect: 'https://mern-google-login.onrender.com',
 }), (req, res) => {
-    console.log("User session after login:", req.user);
-    console.log("User session after login:", req.session); // Log session here
-    res.redirect('https://mern-google-login.onrender.com/profile');
+    if (req.user) {
+        console.log("User session after login:", req.user);
+        res.redirect('https://mern-google-login.onrender.com/profile');
+    } else {
+        res.redirect('https://mern-google-login.onrender.com');
+    }
 });
+
 
 router.get('/current_user', (req, res) => {
     console.log("Current session:", req.session);
