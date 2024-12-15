@@ -25,15 +25,15 @@ router.get('/auth/current_user', (req, res) => {
     }
 });
 
-
-
-
-
-router.get('/logout', (req, res) => {
+router.get('/auth/logout', (req, res) => {
     req.logout(err => {
-        if (err) { return next(err); }
-        res.redirect('https://mern-google-login.onrender.com');
+        if (err) { console.error("Logout error:", err); }
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid', { path: '/' }); // Clear session cookie
+            res.redirect('/'); // Redirect to home
+        });
     });
 });
+
 
 module.exports = router;
