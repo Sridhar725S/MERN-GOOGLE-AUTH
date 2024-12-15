@@ -7,18 +7,19 @@ function Profile() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-    axios.get('https://mern-google-login.onrender.com/auth/current_user', {
-        withCredentials: true,
-    })
-    .then(response => {
-        console.log("User data:", response.data);
-        setUser(response.data);
-    })
-    .catch(error => {
-        console.error("Error fetching user data:", error);
-        setUser(null); // Set user to null on error
-    });
-}, []);
+        axios.get('https://mern-google-login.onrender.com/auth/current_user', {
+        withCredentials: true, // Include cookies
+        })
+        .then(response => {
+            console.log("User data:", response.data);
+            setUser(response.data); // Set user data in state
+        })
+        .catch(error => {
+            console.error("Error fetching user data:", error);
+            setUser(null); // Reset user data
+        });
+    }, []);
+
 
 
     return (
