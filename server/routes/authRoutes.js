@@ -15,15 +15,16 @@ router.get('/google/callback', passport.authenticate('google', {
     }
 });
 
-router.get('/current_user', (req, res) => {
-    if (req.isAuthenticated()) { // Check session authentication
+router.get('/auth/current_user', (req, res) => {
+    if (req.isAuthenticated()) {
         console.log("Authenticated user:", req.user);
-        res.status(200).send(req.user); // Return user data
+        res.status(200).json(req.user); // Send user data
     } else {
         console.error("User not authenticated!");
-        res.status(401).send({ error: "User not authenticated" });
+        res.status(401).json({ error: "Not authenticated" });
     }
 });
+
 
 
 
