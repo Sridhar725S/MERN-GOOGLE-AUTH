@@ -1,16 +1,15 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import passport from 'passport';
-import session from 'express-session';
-import RedisStore from 'connect-redis';
-import Redis from 'ioredis'; // Redis client library
-import cors from 'cors';
-import path from 'path';
-import dotenv from 'dotenv';
-import './config/passportConfig.js'; // Adjust to ensure compatibility with ESM imports
-import authRoutes from './routes/authRoutes.js';
+const express = require('express');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const session = require('express-session');
+const RedisStore = require('connect-redis'); // Correct import for v8.0.1
+const Redis = require('ioredis'); // Redis client library
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+require('./config/passportConfig');
 
-dotenv.config();
+const authRoutes = require('./routes/authRoutes');
 const app = express();
 
 // MongoDB Connection
@@ -35,7 +34,7 @@ redisClient.on('error', (err) => console.error('Redis connection error:', err));
 
 // Initialize RedisStore
 const redisStore = new RedisStore({
-    client: redisClient, // Use the Redis client for the store
+    client: redisClient
 });
 
 // Session Middleware
@@ -60,10 +59,10 @@ app.use('/auth', authRoutes);
 
 // Serve static files from React app in production
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.resolve('client/build')));
+    app.use(express.static(path.join(__dirname, '../client/build')));
 
     app.get('*', (req, res) => {
-        res.sendFile(path.resolve('client/build', 'index.html'));
+        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
     });
 }
 
