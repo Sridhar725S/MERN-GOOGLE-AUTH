@@ -28,6 +28,10 @@ app.use(cors({
 }));
 
 const redisClient = new Redis(process.env.REDIS_URL); // Create Redis client
+
+// Initialize RedisStore
+const redisStore = RedisStore(session); // Call RedisStore with `session` as an argument
+
 // Session Middleware
 app.use(session({
     store: new RedisStore({ client: redisClient }), // Use the Redis client for the session store
