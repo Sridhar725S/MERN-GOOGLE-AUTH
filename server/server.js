@@ -18,25 +18,23 @@ mongoose.connect(process.env.MONGO_URI)
 .catch(err => console.log(err));
 
 app.use(cors({
-    origin: 'https://mern-google-login.onrender.com',
-    credentials: true
+    origin: 'https://mern-google-login.onrender.com', // Update with client domain
+    credentials: true // Allow cookies to be sent
 }));
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI, // MongoDB URI for storing sessions
-        collectionName: 'sessions', // Name of the collection where sessions will be stored
-    }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: { 
-            secure: true, // Use secure cookies in production
-            httpOnly: true, // Prevent client-side JS from accessing cookies
-            sameSite: 'none', // Ensure compatibility with cross-site requests
-            maxAge: 24 * 60 * 60 * 1000 , // 1-day cookie expiration
-            }
-    } 
-));
+        secure: true, 
+        httpOnly: true, 
+        sameSite: 'none', 
+        maxAge: 24 * 60 * 60 * 1000 // 1-day expiration
+    }
+}));
+
 
 
 app.use(passport.initialize());
