@@ -17,12 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch((err) => console.log(err));
 
-// Redis Client
-const redisClient = createClient({
-    url: process.env.REDIS_URL, // Use your Redis URL
-    legacyMode: true, // For compatibility with older versions of Redis commands
-});
-redisClient.connect().catch(console.error);
+
 
 // CORS Middleware
 app.use(cors({
