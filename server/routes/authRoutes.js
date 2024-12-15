@@ -17,23 +17,25 @@ router.get('/google/callback', passport.authenticate('google', {
 
 router.get('/auth/current_user', (req, res) => {
     if (req.isAuthenticated()) {
-        console.log("Authenticated user:", req.user);
-        res.status(200).json(req.user); // Send user data
+        res.json(req.user);
     } else {
-        console.error("User not authenticated!");
-        res.status(401).json({ error: "Not authenticated" });
+        res.status(401).send("Not authenticated");
     }
 });
 
+
 router.get('/auth/logout', (req, res) => {
     req.logout(err => {
-        if (err) { console.error("Logout error:", err); }
+        if (err) {
+            console.error("Error during logout:", err);
+        }
         req.session.destroy(() => {
-            res.clearCookie('connect.sid', { path: '/' }); // Clear session cookie
-            res.redirect('/'); // Redirect to home
+            res.clearCookie('connect.sid'); // Clear session cookie
+            res.redirect('/'); // Redirect to homepage
         });
     });
 });
+
 
 
 module.exports = router;
