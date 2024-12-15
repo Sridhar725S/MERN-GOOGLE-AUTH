@@ -7,17 +7,19 @@ function Profile() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get('https://mern-google-login.onrender.com/auth/current_user', {
-            withCredentials: true, // Allows sending cookies with the request
+    axios.get('https://mern-google-login.onrender.com/auth/current_user', {
+        withCredentials: true,
     })
     .then(response => {
         console.log("User data:", response.data);
+        setUser(response.data);
     })
     .catch(error => {
         console.error("Error fetching user data:", error);
+        setUser(null); // Set user to null on error
     });
+}, []);
 
-    }, []);
 
     return (
         <div className="profile-container">
