@@ -24,18 +24,18 @@ app.use(cors({
 
 app.use(
     session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET, // Use a secure secret
+        resave: false, // Prevent unnecessary session resaves
+        saveUninitialized: false, // Don't save empty sessions
         store: MongoStore.create({
-            mongoUrl: process.env.MONGO_URI, // MongoDB connection
-            collectionName: 'sessions',
+            mongoUrl: process.env.MONGO_URI,
+            collectionName: 'sessions', // Name of the collection in MongoDB
         }),
         cookie: {
-            secure: true, // For HTTPS
-            httpOnly: true,
-            sameSite: 'none', // Required for cross-origin cookies
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            secure: process.env.NODE_ENV === 'production', // Secure cookies in production
+            httpOnly: true, // Prevent JavaScript access
+            sameSite: 'none', // Allow cross-origin cookies
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
         },
     })
 );
