@@ -3,24 +3,21 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
 passport.serializeUser((user, done) => {
-    console.log("Serialized user ID:", user.id); // Logs for debugging
-    done(null, user.id); // Store only the user ID
+    done(null, user.id); // Serialize the user ID
 });
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await User.findById(id); // Find user by ID
+        const user = await User.findById(id); // Fetch user from MongoDB
         if (!user) {
-            console.error("No user found during deserialization!");
-            return done(null, false); // Invalidate session if no user
+            return done(null, false); // No user found
         }
-        console.log("Deserialized user:", user); // Logs for debugging
         done(null, user); // Attach user to req.user
     } catch (err) {
-        console.error("Error in deserialization:", err);
-        done(err, null);
+        done(err, null); // Handle errors
     }
 });
+
 
 
 passport.use(new GoogleStrategy({
