@@ -42,7 +42,7 @@ const RedisStore = connectRedis(session); // Correctly use connect-redis
 
 // Session Middleware
 app.use(session({
-    store: new RedisStore({ client }), // Ensure Redis client is working
+    store: new RedisStore({ client: client }), // Ensure Redis client is working
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -50,6 +50,8 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000,
         secure: process.env.NODE_ENV === 'production', // Ensure secure in production
         httpOnly: true,
+        sameSite: 'none',   // Allow cross-origin cookies
+        secure: true,       // Cookie only sent over HTTPS
     },
 }));
 
