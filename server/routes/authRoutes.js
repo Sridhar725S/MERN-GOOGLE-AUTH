@@ -13,10 +13,19 @@ router.get('/google/callback', passport.authenticate('google', {
         ? 'https://mern-google-login-client.onrender.com'
         : 'http://localhost:3000',
 }), (req, res) => {
+    if (!req.user) {
+        console.error('Authentication failed. req.user is not defined.');
+        return res.redirect(process.env.NODE_ENV === 'production'
+            ? 'https://mern-google-login-client.onrender.com'
+            : 'http://localhost:3000');
+    }
+
+    console.log('Successfully authenticated user:', req.user);
     res.redirect(process.env.NODE_ENV === 'production'
         ? 'https://mern-google-login-client.onrender.com/profile'
         : 'http://localhost:3000/profile');
 });
+
 
 router.get('/logout', (req, res) => {
     req.logout((err) => {
