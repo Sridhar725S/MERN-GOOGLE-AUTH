@@ -12,6 +12,7 @@ passport.use(new GoogleStrategy({
         ? "https://mern-google-login.onrender.com/auth/google/callback" 
         : "http://localhost:5000/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
+    console.log('Google profile:', profile); 
     try {
         let user = await User.findOne({ googleId: profile.id });
 
