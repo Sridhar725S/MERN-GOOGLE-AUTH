@@ -7,6 +7,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // Current user route
 router.get('/current_user', (req, res) => {
+    console.log('Current user:', req.user); 
     res.send(req.user);
 });
 
