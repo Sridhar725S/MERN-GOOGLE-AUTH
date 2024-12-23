@@ -13,7 +13,11 @@ router.get('/google/callback', passport.authenticate('google', {
         ? 'https://mern-google-login-client.onrender.com'
         : 'http://localhost:3000',
 }), (req, res) => {
-    console.log('Callback hit. User:', req.user); // Add this
+      // Store only the user ID in the session
+    req.session.userId = req.user.id;
+
+    console.log('User ID stored in session:', req.session.userId);
+    
     if (!req.user) {
         console.error('Authentication failed. req.user is not defined.');
         return res.redirect(process.env.NODE_ENV === 'production'
