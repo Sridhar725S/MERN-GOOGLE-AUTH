@@ -56,6 +56,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
+        domain: process.env.NODE_ENV === 'production' ? 'https://mern-google-login-client.onrender.com' : 'localhost', // Set this appropriately
         maxAge: 24 * 60 * 60 * 1000, // 1 day
         secure: process.env.NODE_ENV === 'production', // Secure cookies in production
         httpOnly: true, // Prevent client-side access
