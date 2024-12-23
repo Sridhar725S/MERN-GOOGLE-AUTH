@@ -23,7 +23,7 @@ router.get('/google/callback', passport.authenticate('google', {
             ? 'https://mern-google-login-client.onrender.com'
             : 'http://localhost:3000');
     }
-
+    console.log('User authenticated successfully:', req.user);
     // Store only the user ID in the session
     req.session.userId = req.user.id;
     console.log('User ID stored in session:', req.session.userId);
