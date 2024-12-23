@@ -59,7 +59,7 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000, // 1 day
         secure: process.env.NODE_ENV === 'production', // Secure cookies in production
         httpOnly: true, // Prevent client-side access
-        sameSite: 'none', // Allow cross-origin cookies
+        sameSite: 'None', // Allow cross-origin cookies
     },
 }));
 
