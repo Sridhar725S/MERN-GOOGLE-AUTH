@@ -13,7 +13,7 @@ router.get('/current_user', (req, res) => {
 
 // Google callback route (corrected with /auth in the route)
 router.get('/auth/google/callback', passport.authenticate('google', {
-    console.log('running is running');
+    
     failureRedirect: process.env.NODE_ENV === 'production'
         ? 'https://mern-google-login-client.onrender.com'
         : 'http://localhost:3000',
