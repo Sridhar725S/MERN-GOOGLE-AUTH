@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // ==================
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
-        ? 'https://mern-google-login-client.onrender.com' 
+        ? 'https://mern-google-login.onrender.com' 
         : 'http://localhost:3000', 
     credentials: true,
 }));
