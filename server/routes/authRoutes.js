@@ -51,4 +51,9 @@ router.get('/logout', (req, res) => {
         : 'http://localhost:3000');
 });
 
+// Example route with JWT auth
+router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json({ message: 'You have access to this route' });
+});
+
 module.exports = router;
