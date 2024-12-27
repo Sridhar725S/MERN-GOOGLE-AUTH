@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
-const cookieParser = require('cookie-parser'); 
-const jwt = require('jsonwebtoken'); 
+const cookieParser = require('cookie-parser');  // To parse cookies
+const jwt = require('jsonwebtoken');  // JWT for validation
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
@@ -23,9 +23,9 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // ==================
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
-        ? 'https://mern-google-login.onrender.com' 
-        : 'http://localhost:3000', 
-    credentials: true,
+        ? 'https://mern-google-login-client.onrender.com' // Client URL in production
+        : 'http://localhost:3000', // Client URL in development
+    credentials: true, // Allow cookies
 }));
 
 // ==================
@@ -45,7 +45,7 @@ const authenticateJWT = (req, res, next) => {
         if (err) {
             return res.status(403).send('Invalid Token');
         }
-        req.user = user;
+        req.user = user;  // Store the user in the request object
         next();
     });
 };
@@ -75,3 +75,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
