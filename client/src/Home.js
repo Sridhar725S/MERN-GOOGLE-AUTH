@@ -1,11 +1,9 @@
-// src/Home.js 
 import React from 'react';
 import './index.css'; // Ensure to import the CSS file
-import googleLogo from './assets/google.png'; // Import the Google image
+import googleLogo from './assets/google.png'; // Import the Google logo
 
 const Login = () => {
     const handleGoogleLogin = () => {
-        // Dynamically handle URL for production and development
         const googleLoginURL = process.env.NODE_ENV === 'production'
             ? 'https://mern-google-login.onrender.com/auth/google'
             : 'http://localhost:5000/auth/google';
