@@ -1,4 +1,4 @@
-// src/Login.js
+// src/Home.js 
 import React from 'react';
 import './index.css'; // Ensure to import the CSS file
 import googleLogo from './assets/google.png'; // Import the Google image
