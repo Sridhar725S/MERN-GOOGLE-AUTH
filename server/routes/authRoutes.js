@@ -20,7 +20,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     res.redirect(process.env.NODE_ENV === 'production'
         ? 'https://mern-google-login.onrender.com/profile'
         : 'http://localhost:3000/profile');
-});
+}); 
 
 // Current user route (JWT validation)
 router.get('/current_user', (req, res) => {
