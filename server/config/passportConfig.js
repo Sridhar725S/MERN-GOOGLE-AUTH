@@ -33,11 +33,12 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-passport.deserializeUser((token, done) => {
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        done(null, decoded);
-    } catch (err) {
-        done(err);
-    }
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+    User.findById(id, (err, user) => {
+        done(err, user);
+    });
 });
