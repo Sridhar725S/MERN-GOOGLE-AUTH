@@ -1,29 +1,23 @@
-// src/Profile.js
+// Profile.js (React)
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './index.css'; // Ensure CSS exists
 
-function Profile() {
-    const [user, setUser] = useState(null);
+const Profile = () => {
+  const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get(
-                    process.env.NODE_ENV === 'production'
-                        ? 'https://mern-google-login.onrender.com/auth/current_user'
-                        : 'http://localhost:5000/auth/current_user',
-                    { withCredentials: true }
-                );
-                console.log('User data:', response.data);
-                setUser(response.data);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-        fetchUser();
-    }, []);
+  useEffect(() => {
+    axios.get('https://mern-google-login.onrender.com/profile', { withCredentials: true })
+      .then((response) => {
+        setUser(response.data.user);
+      })
+      .catch((error) => {
+        console.error('Error fetching profile:', error);
+      });
+  }, []);
 
+  if (!user) {
+    return <div>Loading...</div>;
+  }
     return (
         <div className="profile-container">
             {user ? (
