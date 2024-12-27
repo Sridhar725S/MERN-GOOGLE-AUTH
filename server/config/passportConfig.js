@@ -32,11 +32,3 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-passport.deserializeUser((token, done) => {
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        done(null, decoded);
-    } catch (err) {
-        done(err);
-    }
-});
