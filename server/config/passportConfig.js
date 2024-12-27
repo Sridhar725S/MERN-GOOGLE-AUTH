@@ -16,6 +16,7 @@ passport.use(new GoogleStrategy({
                 googleId: profile.id,
                 name: profile.displayName,
                 email: profile.emails[0].value,
+                profilePicture: profile.photos ? profile.photos[0].value : '',  // Saving profile picture if available
             });
             await user.save();
         }
