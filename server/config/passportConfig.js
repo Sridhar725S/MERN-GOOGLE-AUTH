@@ -3,7 +3,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Configure the Google Strategy for Passport
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
@@ -12,11 +11,9 @@ passport.use(new GoogleStrategy({
         : "http://localhost:5000/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Check if the user already exists in the DB
         let user = await User.findOne({ googleId: profile.id });
         
         if (!user) {
-            // If the user doesn't exist, create a new user
             user = new User({
                 googleId: profile.id,
                 username: profile.displayName,
@@ -26,8 +23,7 @@ passport.use(new GoogleStrategy({
             });
             await user.save();
         }
-        
-        // Now we generate the JWT token
+
         const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
         return done(null, { user, token });
     } catch (err) {
@@ -36,7 +32,6 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-// If you need to deserialize the JWT token instead of session:
 passport.deserializeUser((token, done) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -45,3 +40,4 @@ passport.deserializeUser((token, done) => {
         done(err);
     }
 });
+
