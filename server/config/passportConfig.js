@@ -7,7 +7,7 @@ passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID, // Ensure CLIENT_ID is in .env
     clientSecret: process.env.CLIENT_SECRET, // Ensure CLIENT_SECRET is in .env
     callbackURL: process.env.NODE_ENV === "production" 
-        ? "https://your-production-url/auth/google/callback" // Update with your production URL
+        ? "https://mern-google-login.onrender.com/auth/google/callback" // Update with your production URL
         : "http://localhost:5000/auth/google/callback" // Local URL for development
 }, async (accessToken, refreshToken, profile, done) => {
     try {
