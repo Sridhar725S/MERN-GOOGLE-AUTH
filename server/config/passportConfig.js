@@ -1,39 +1,42 @@
-// passportConfig.js
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User'); // This is the User model, you'll create below
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL,
-},
-async (token, tokenSecret, profile, done) => {
-  try {
-    let user = await User.findOne({ googleId: profile.id });
+    clientID: process.env.CLIENT_ID, // Ensure CLIENT_ID is in .env
+    clientSecret: process.env.CLIENT_SECRET, // Ensure CLIENT_SECRET is in .env
+    callbackURL: process.env.NODE_ENV === "production" 
+        ? "https://your-production-url/auth/google/callback" // Update with your production URL
+        : "http://localhost:5000/auth/google/callback" // Local URL for development
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        let user = await User.findOne({ googleId: profile.id });
 
-    if (!user) {
-      // If no user found, create a new one
-      user = new User({
-        googleId: profile.id,
-        username: profile.displayName,
-        email: profile.emails[0].value,
-      });
-      await user.save();
+        if (!user) {
+            user = new User({
+                googleId: profile.id,
+                username: profile.displayName,
+                email: profile.emails[0].value,
+                profilePicture: profile.photos[0].value,
+                refreshToken: refreshToken,
+            });
+            await user.save();
+        }
+
+        const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return done(null, { user, token });
+    } catch (err) {
+        console.error('Error authenticating user:', err);
+        return done(err, null);
     }
-    
-    // Send the user object as the second argument to done
-    return done(null, user);
-  } catch (err) {
-    return done(err, null);
-  }
 }));
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
+passport.deserializeUser((token, done) => {
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        done(null, decoded);
+    } catch (err) {
+        done(err);
+    }
 });
