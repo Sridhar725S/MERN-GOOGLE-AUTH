@@ -3,21 +3,28 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
 // Google authentication route
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 
 // Google callback route (JWT handling)
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }), (req, res) => {
     if (!req.user) {
         return res.status(401).json({ message: 'Authentication failed' });
     }
 
-    const { user, token } = req.user;
+    const { user } = req.user;
 
-    // Set JWT in a cookie or send it as part of the response
+    // Create a JWT token
+    const token = jwt.sign(
+        { id: user._id, email: user.email, name: user.name }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '1h' }
+    );
+
+    // Set JWT in a cookie (You could alternatively send it in the response body or headers)
     res.cookie('jwt', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Ensure cookies are sent securely
-        sameSite: 'None' // Required for cross-site cookies
+        secure: process.env.NODE_ENV === 'production',  // Secure cookie for production
+        sameSite: 'None'  // Required for cross-site cookies
     });
 
     // Redirect to profile page
@@ -28,7 +35,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
 
 // Protect the current user route with JWT validation
 router.get('/current_user', (req, res) => {
-    const token = req.cookies.jwt; // JWT from cookies
+    const token = req.cookies.jwt;  // JWT from cookies
 
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
@@ -39,7 +46,7 @@ router.get('/current_user', (req, res) => {
             return res.status(403).json({ message: 'Invalid token' });
         }
 
-        res.json(decoded); // Send back decoded user data
+        res.json(decoded);  // Send back decoded user data
     });
 });
 
@@ -51,9 +58,21 @@ router.get('/logout', (req, res) => {
         : 'http://localhost:3000');
 });
 
-// Example route with JWT auth
-router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.json({ message: 'You have access to this route' });
+// Example route with JWT auth (no session, JWT used)
+router.get('/protected', (req, res) => {
+    const token = req.cookies.jwt;  // Get JWT from cookies
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+
+        res.json({ message: 'You have access to this route', user: decoded });
+    });
 });
 
 module.exports = router;
