@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Google callback route (corrected with JWT handling)
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     // If user is authenticated, generate a JWT token
     if (!req.user) {
         return res.status(401).json({ message: 'Authentication failed' });
