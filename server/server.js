@@ -1,78 +1,82 @@
 // server.js
 const express = require('express');
-const mongoose = require('mongoose');
 const passport = require('passport');
-const cookieParser = require('cookie-parser');  // To parse cookies
-const jwt = require('jsonwebtoken');  // JWT for validation
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path');
+const mongoose = require('mongoose');
 require('dotenv').config();
-require('./config/passportConfig'); // Passport strategy configuration
 
-const authRoutes = require('./routes/authRoutes');
+// Initialize Passport
+require('./config/passportConfig'); // This will handle Google login strategy
+
 const app = express();
 
-// ==================
-// MongoDB Connection
-// ==================
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('✅ MongoDB connected'))
-    .catch((err) => console.error('❌ MongoDB connection error:', err));
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.log('❌ MongoDB connection error:', err));
 
-// ==================
-// CORS Middleware
-// ==================
+// Middleware
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? 'https://mern-google-login-client.onrender.com' // Client URL in production
-        : 'http://localhost:3000', // Client URL in development
-    credentials: true, // Allow cookies
+  origin: process.env.CLIENT_URL, // Client URL (React app)
+  credentials: true,
 }));
 
-// ==================
-// Cookie Parser Middleware
-// ==================
 app.use(cookieParser());
+app.use(express.json());
 
-// ==================
-// JWT Middleware (to protect routes)
-// ==================
-const authenticateJWT = (req, res, next) => {
-    const token = req.cookies.jwt;
-    if (!token) {
-        return res.status(401).send('Access Denied');
-    }
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).send('Invalid Token');
-        }
-        req.user = user;  // Store the user in the request object
-        next();
-    });
-};
+// =====================
+// Authentication Routes
+// =====================
 
-// ==================
-// Routes
-// ==================
-app.use('/auth', authRoutes);
+// Google OAuth routes
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email'],
+}));
 
-// Protected route example (using JWT)
-app.get('/protected', authenticateJWT, (req, res) => {
-    res.send('This is a protected route, ' + req.user.username);
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+  // Upon successful login, generate a JWT token and send it in the response
+  const token = jwt.sign({ id: req.user.id, username: req.user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  // Set JWT in HTTP-only cookie
+  res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'None' });
+
+  res.redirect('/profile'); // Redirect to the profile page after login
 });
 
-// Serve React static files in production
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/build')));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-    });
-}
+// =====================
+// Middleware to verify JWT
+// =====================
 
-// ==================
+const authenticateJWT = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) {
+    return res.status(401).send('Access Denied');
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).send('Invalid Token');
+    }
+    req.user = user;  // Attach user info to the request
+    next();
+  });
+};
+
+// =====================
+// Profile Route (protected by JWT)
+// =====================
+
+app.get('/profile', authenticateJWT, (req, res) => {
+  res.json({
+    message: 'Welcome to your profile',
+    user: req.user,  // User information stored in JWT
+  });
+});
+
 // Starting the Server
-// ==================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
