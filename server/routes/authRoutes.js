@@ -29,7 +29,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
 
     // Redirect to profile page
     res.redirect(process.env.NODE_ENV === 'production'
-        ? 'https://mern-google-login-client.onrender.com/profile'
+        ? 'https://mern-google-login.onrender.com/profile'
         : 'http://localhost:3000/profile');
 });
 
@@ -54,7 +54,7 @@ router.get('/current_user', (req, res) => {
 router.get('/logout', (req, res) => {
     res.clearCookie('jwt');
     res.redirect(process.env.NODE_ENV === 'production'
-        ? 'https://mern-google-login-client.onrender.com'
+        ? 'https://mern-google-login.onrender.com'
         : 'http://localhost:3000');
 });
 
