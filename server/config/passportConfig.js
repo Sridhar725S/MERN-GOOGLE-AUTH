@@ -4,15 +4,15 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID, // Ensure CLIENT_ID is in .env
-    clientSecret: process.env.CLIENT_SECRET, // Ensure CLIENT_SECRET is in .env
-    callbackURL: process.env.NODE_ENV === "production" 
-        ? "https://mern-google-login.onrender.com/auth/google/callback" // Update with your production URL
-        : "http://localhost:5000/auth/google/callback" // Local URL for development
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: process.env.NODE_ENV === "production"
+        ? "https://mern-google-login.onrender.com/auth/google/callback"
+        : "http://localhost:5000/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         let user = await User.findOne({ googleId: profile.id });
-
+        
         if (!user) {
             user = new User({
                 googleId: profile.id,
