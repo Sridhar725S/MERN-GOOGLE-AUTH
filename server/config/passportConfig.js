@@ -1,42 +1,47 @@
-// config/passportConfig.js
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => done(null, user)).catch(done);
-});
-
+// Configure the Google Strategy for Passport
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === "production"
-        ? "https://mern-google-login.onrender.com/auth/google/callback"
+    callbackURL: process.env.NODE_ENV === "production" 
+        ? "https://mern-google-login.onrender.com/auth/google/callback" 
         : "http://localhost:5000/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
-    console.log('Google profile:', profile);
-
     try {
+        // Check if the user already exists in the DB
         let user = await User.findOne({ googleId: profile.id });
-
-        if (user) {
-            // If user already exists, return the user
-            return done(null, user);
+        
+        if (!user) {
+            // If the user doesn't exist, create a new user
+            user = new User({
+                googleId: profile.id,
+                username: profile.displayName,
+                email: profile.emails[0].value,
+                profilePicture: profile.photos[0].value,
+                refreshToken: refreshToken,
+            });
+            await user.save();
         }
-
-        // Create a new user if not found
-        user = new User({
-            googleId: profile.id,
-            username: profile.displayName,
-            email: profile.emails[0].value,
-            profilePicture: profile.photos[0].value,
-        });
-
-        await user.save();
-        done(null, user);
+        
+        // Now we generate the JWT token
+        const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return done(null, { user, token });
     } catch (err) {
-        console.error("Error authenticating user:", err);
-        done(err, null);
+        console.error('Error authenticating user:', err);
+        return done(err, null);
     }
 }));
+
+// If you need to deserialize the JWT token instead of session:
+passport.deserializeUser((token, done) => {
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        done(null, decoded);
+    } catch (err) {
+        done(err);
+    }
+});
