@@ -40,6 +40,30 @@ router.get('/current_user', (req, res) => {
     });
 });
 
+// Example of generating JWT on login
+router.post('/login', async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        // Create JWT token
+        const token = jwt.sign(
+            { userId: user.id, username: user.username },
+            process.env.JWT_SECRET, // Use the JWT_SECRET from the .env file
+            { expiresIn: '1d' } // Set token expiry (e.g., 1 day)
+        );
+
+        // Send the token to the client
+        res.status(200).json({ token });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 // Logout route (invalidate JWT by clearing the cookie)
 router.get('/logout', (req, res) => {
     res.clearCookie('jwt');
